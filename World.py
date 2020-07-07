@@ -40,32 +40,11 @@ class World:
 
 
 def _getNeighborCount(array, coords):
-    count = 0
     row, col = coords
     height, width = len(array), len(array[0])
-
-    if row - 1 >= 0:
-        if col - 1 >= 0 and array[row - 1][col - 1] == 1:
-            count += 1
-        if array[row - 1][col] == 1:
-            count += 1
-        if col + 1 < width and array[row - 1][col + 1] == 1:
-            count += 1
-
-    if col - 1 >= 0 and array[row][col - 1] == 1:
-        count += 1
-    if col + 1 < width and array[row][col + 1] == 1:
-        count += 1
-
-    if row + 1 < height:
-        if col - 1 >= 0 and array[row + 1][col - 1] == 1:
-            count += 1
-        if array[row + 1][col] == 1:
-            count += 1
-        if col + 1 < width and array[row + 1][col + 1] == 1:
-            count += 1
-
-    return count
+    return array[row - 1][col - 1] + array[row - 1][col] + array[row - 1][(col + 1) % width] +\
+           array[row][col - 1] + array[row][(col + 1) % width] +\
+           array[(row + 1) % height][col - 1] + array[(row + 1) % height][col] + array[(row + 1) % height][(col + 1) % width]
 
 
 def _generateRow(array, rowIndex):
