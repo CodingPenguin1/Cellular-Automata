@@ -31,7 +31,7 @@ if __name__ == '__main__':
                     quit()
 
         # Render frame
-        print('Rendering frame')
+        print('Rendering frame', end=' - ')
         t0 = time()
         window.fill(WHITE)
         for x in range(world.width):
@@ -41,14 +41,12 @@ if __name__ == '__main__':
         print(f'{round(time() - t0, 2)}s')
 
         # Update world
-        print('Updating world')
+        print('Updating world', end=' - ')
         t0 = time()
         world.updateConways()
         print(f'{round(time() - t0, 2)}s')
 
         # Update clock and display
         print('Displaying frame')
-        t0 = time()
         clock.tick(targetFramerate)
         pygame.display.update()
-        print(f'{round(time() - t0, 2)}s')

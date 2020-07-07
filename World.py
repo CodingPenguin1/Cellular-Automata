@@ -40,12 +40,31 @@ class World:
 
 
 def _getNeighborCount(array, coords):
-    count = 0 if array[coords[0]][coords[1]] == 0 else -1
-    for row in range(coords[0] - 1, coords[0] + 2):
-        for col in range(coords[1] - 1, coords[1] + 2):
-            if row >= 0 and row < len(array) and col >= 0 and col < len(array[0]):
-                if array[row][col] == 1:
-                    count += 1
+    count = 0
+    row, col = coords
+    height, width = len(array), len(array[0])
+
+    if row - 1 >= 0:
+        if col - 1 >= 0 and array[row - 1][col - 1] == 1:
+            count += 1
+        if array[row - 1][col] == 1:
+            count += 1
+        if col + 1 < width and array[row - 1][col + 1] == 1:
+            count += 1
+
+    if col - 1 >= 0 and array[row][col - 1] == 1:
+        count += 1
+    if col + 1 < width and array[row][col + 1] == 1:
+        count += 1
+
+    if row + 1 < height:
+        if col - 1 >= 0 and array[row + 1][col - 1] == 1:
+            count += 1
+        if array[row + 1][col] == 1:
+            count += 1
+        if col + 1 < width and array[row + 1][col + 1] == 1:
+            count += 1
+
     return count
 
 
@@ -53,27 +72,18 @@ def _generateRow(array, rowIndex):
     row = np.copy(array[rowIndex])
     for col in range(len(array[rowIndex])):
         neighbors = _getNeighborCount(array, [rowIndex, col])
-        if array[rowIndex][col] == 1:
-            # Any live cell with fewer than two live neighbours dies
-            if neighbors < 2:
-                row[col] = 0
-            # Any live cell with two or three live neighbours lives on to the next generation
-            if neighbors == 2 or neighbors == 3:
-                row[col] = 1
-            # Any live cell with more than three live neighbours dies
-            else:
-                row[col] = 0
-        else:
-            # Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-            if neighbors == 3:
-                row[col] = 1
-            else:
-                row[col] = 0
+        row[col] = ((~neighbors >> 2) & (neighbors >> 1) & (array[rowIndex][col] | neighbors)) & 1
     return {'index': rowIndex, 'values': row}
 
 
 if __name__ == '__main__':
-    world = World((10, 2))
+    world = World((10, 10))
+
+    world.randomize()
+    # world.grid[5][5] = 1
+    # world.grid[5][6] = 1
+    # world.grid[6][5] = 1
+
     print(world)
     while input() != 'q':
         world.updateConways()
