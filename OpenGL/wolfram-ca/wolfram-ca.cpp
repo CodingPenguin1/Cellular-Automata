@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 
-#define WIDTH 1001
+#define WIDTH 1000
 #define HEIGHT 1000
 
 
@@ -20,10 +20,10 @@ uint8_t current_buffer = 0;
 double start_time;
 const int framerate_average_count = 5;
 double *frame_times = new double[framerate_average_count];
-uint8_t rule = 250;
+uint8_t rule = 101;
 const uint32_t OFF_COLOR = 0x000000ff;
 const uint32_t ON_COLOR = 0xffffffff;
-int row = 0;
+int row = HEIGHT - 1;
 
 
 double time() {
@@ -86,10 +86,10 @@ void update_grid() {
             grid[next_buffer][i] = OFF_COLOR;
 
 
-        grid[next_buffer][WIDTH * row + row] = 0xff000000;
+        // grid[next_buffer][WIDTH * row + row] = 0xff000000;
     }
 
-    if (row < HEIGHT)
+    if (row < HEIGHT - 1)
         ++row;
     current_buffer = next_buffer;
 }
@@ -149,7 +149,7 @@ void init(int argc, char **argv) {
     }
 
     // Put 1 pixel in the top row, center col
-    grid[current_buffer][WIDTH / 2] = ON_COLOR;
+    grid[current_buffer][(WIDTH * HEIGHT) - (WIDTH / 2)] = ON_COLOR;
 
     // Initialize framerate average array
     for (int i = 0; i < framerate_average_count; ++i)
