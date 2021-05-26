@@ -7,6 +7,9 @@
 #include <string>
 #include <unistd.h>
 
+// Read about Wolfram Elementary Cellular Automata here:
+// https://mathworld.wolfram.com/ElementaryCellularAutomaton.html
+
 
 #define WIDTH 1000
 #define HEIGHT 1000
@@ -20,10 +23,9 @@ uint8_t current_buffer = 0;
 double start_time;
 const int framerate_average_count = 5;
 double *frame_times = new double[framerate_average_count];
-uint8_t rule = 101;
+uint8_t rule = 26;
 const uint32_t OFF_COLOR = 0x000000ff;
 const uint32_t ON_COLOR = 0xffffffff;
-int row = HEIGHT - 1;
 
 
 double time() {
@@ -42,11 +44,11 @@ void update_grid() {
     // Based on work by The Coding Train on YouTube
     // https://www.youtube.com/watch?v=W1zKu3fDQR8
     uint8_t next_buffer = current_buffer ? 0 : 1;
+    const int row = HEIGHT - 1;
 
     // If current row is bottom row, shift all rows up 1
-    if (row == HEIGHT - 1)
-        for (int i = WIDTH; i < WIDTH * HEIGHT; ++i)
-            grid[current_buffer][i - WIDTH] = grid[current_buffer][i];
+    for (int i = WIDTH; i < WIDTH * HEIGHT; ++i)
+        grid[current_buffer][i - WIDTH] = grid[current_buffer][i];
 
     // Copy current buffer to next buffer
     for (int i = 0; i < WIDTH * HEIGHT; ++i)
@@ -86,8 +88,6 @@ void update_grid() {
             grid[next_buffer][i] = OFF_COLOR;
     }
 
-    if (row < HEIGHT - 1)
-        ++row;
     current_buffer = next_buffer;
 }
 
