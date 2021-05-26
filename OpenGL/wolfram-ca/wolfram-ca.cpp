@@ -84,9 +84,6 @@ void update_grid() {
             grid[next_buffer][i] = ON_COLOR;
         else
             grid[next_buffer][i] = OFF_COLOR;
-
-
-        // grid[next_buffer][WIDTH * row + row] = 0xff000000;
     }
 
     if (row < HEIGHT - 1)
@@ -120,7 +117,6 @@ void display() {
 
     glFlush();
     glutSwapBuffers();
-    // sleep(1);
 }
 
 
