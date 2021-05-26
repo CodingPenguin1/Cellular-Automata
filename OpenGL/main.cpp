@@ -8,11 +8,14 @@
 #include <unistd.h>
 
 
-#define DISPLAY_SIZE 1000
+#define WIDTH 1000
+#define HEIGHT 1000
 
 
-uint8_t grid[DISPLAY_SIZE * DISPLAY_SIZE];
-uint8_t current_bit = 1;
+uint32_t buffer_a[WIDTH * HEIGHT];
+uint32_t buffer_b[WIDTH * HEIGHT];
+uint32_t *grid[2] = {buffer_a, buffer_b};
+uint8_t current_buffer = 0;
 
 double start_time;
 const int framerate_average_count = 5;
@@ -33,10 +36,7 @@ void draw_string(float x, float y, std::string s) {
 
 void flip_grid() {
     // Switches the grid buffers
-    for (int i = 0; i < DISPLAY_SIZE * DISPLAY_SIZE; ++i) {
-        grid[i] = (grid[i] << 1) | ((grid[i] >> 1) & 1) | (0xfc);
-    }
-    printf("%d\n", grid[0]);
+    current_buffer = current_buffer ? 0 : 1;
 }
 
 
@@ -53,7 +53,7 @@ void display() {
     // Update grid
     update_grid();
     glRasterPos2f(-1, -1);
-    glDrawPixels(DISPLAY_SIZE, DISPLAY_SIZE, GL_LUMINANCE, GL_UNSIGNED_BYTE, grid);
+    glDrawPixels(WIDTH, HEIGHT, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, grid[current_buffer]);
 
     // Calculate framerate
     for (int i = 1; i < framerate_average_count; ++i)
@@ -78,14 +78,14 @@ void init(int argc, char **argv) {
     // Set up window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(DISPLAY_SIZE, DISPLAY_SIZE);
+    glutInitWindowSize(WIDTH, HEIGHT);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("[floating] Cellular Automata");
     glutDisplayFunc(display);
     glutIdleFunc(glutPostRedisplay);
 
     // Set up rendering
-    glViewport(0, 0, DISPLAY_SIZE, DISPLAY_SIZE);
+    glViewport(0, 0, WIDTH, HEIGHT);
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
     // Set start time of program
@@ -93,11 +93,9 @@ void init(int argc, char **argv) {
     printf("Start time: %f\n", start_time);
 
     // Create empty grid
-    for (int i = 0; i < DISPLAY_SIZE * DISPLAY_SIZE; ++i)
-        grid[i] = 0;
-    for (int i = 0; i < DISPLAY_SIZE; ++i) {
-        grid[i + DISPLAY_SIZE * i] = 0b11111110;
-        grid[DISPLAY_SIZE - 1 - i + DISPLAY_SIZE * i] = 0b11111110;
+    for (int i = 0; i < WIDTH * HEIGHT; ++i) {
+        grid[0][i] = 0x00000000;
+        grid[1][i] = 0x00000000;
     }
 
     // Initialize framerate average arrayN
