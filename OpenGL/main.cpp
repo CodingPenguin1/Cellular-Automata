@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <unistd.h>
 
 
 #define DISPLAY_SIZE 1000
@@ -30,11 +31,17 @@ void draw_string(float x, float y, std::string s) {
 }
 
 
+void flip_grid() {
+    // Switches the grid buffers
+    for (int i = 0; i < DISPLAY_SIZE * DISPLAY_SIZE; ++i) {
+        grid[i] = (grid[i] << 1) | ((grid[i] >> 1) & 1) | (0xfc);
+    }
+    printf("%d\n", grid[0]);
+}
+
+
 void update_grid() {
-    // for (int i = 0; i < 1; ++i) {
-    //     uint8_t bit_0 = (grid[i] >> 1) & 1;
-    //     uint8_t bit_1 = (grid[i] >> 2) & 1;
-    // }
+    flip_grid();
 }
 
 
@@ -63,6 +70,7 @@ void display() {
 
     glFlush();
     glutSwapBuffers();
+    // sleep(1);
 }
 
 
